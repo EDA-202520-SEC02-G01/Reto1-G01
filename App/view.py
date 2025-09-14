@@ -1,12 +1,19 @@
 import sys
+import App.logic as logic
+from tabulate import tabulate
+import csv
 
+csv.field_size_limit(2147483647)
+
+default_limit = 1000
+sys.setrecursionlimit(default_limit*10)
 
 def new_logic():
     """
         Se crea una instancia del controlador
     """
-    #TODO: Llamar la función de la lógica donde se crean las estructuras de datos
-    pass
+    control = logic.new_logic()
+    return control
 
 def print_menu():
     print("Bienvenido")
@@ -25,32 +32,68 @@ def load_data(control):
     """
     Carga los datos
     """
-    #TODO: Realizar la carga de datos
-    pass
-
+    filename = 'movies-large.csv'
+    control_data = logic.load_data(control, filename)
+    return control_data
 
 def print_data(control, id):
     """
         Función que imprime un dato dado su ID
     """
-    #TODO: Realizar la función para imprimir un elemento
-    pass
+    data = logic.get_data(control, id)
+    
+    if data:
+        headers = ["Campo", "Valor"]
+        rows = [
+            ["ID", data['id']],
+            ["Título", data['title']],
+            ["Idioma original", data['original_language']],
+            ["Fecha de publicación", data['release_date']],
+            ["Duración", str(data['runtime']) + " minutos"],
+            ["Presupuesto", str(data['budget'])],
+            ["Ingresos", str(data['revenue'])],
+            ["Ganancias", "Indefinido" if data['budget'] == 'Indefinido' or data['revenue'] == 'Indefinido' else str(int(data['revenue']) - int(data['budget']))],
+            ["Géneros", ', '.join(data['genres'])],
+            ["Compañías de producción", ', '.join(data['production_companies'])]
+        ]
+
+        print(tabulate(rows, headers=headers, tablefmt='grid'))
+    else:
+        print("ID no encontrado.")
+    
 
 def print_req_1(control):
     """
         Función que imprime la solución del Requerimiento 1 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 1
-    pass
+    
+    title = input("Ingrese el nombre de la pelicula: ")
+    original_language = input("Ingrese el idioma original: ")
+    
+    resultado = logic.req_1(control, title, original_language)
+    
+    if resultado == 0:
+        print("No se encontraron películas que cumplan con los criterios.")
+    else:
+        table_data = [
+            ['Título original', resultado['title']],
+            ['Idioma original', resultado['original_language']],
+            ['Duración (min)', resultado['runtime']],
+            ['Fecha de publicación', resultado['release_date']],
+            ['Presupuesto', resultado['budget']],
+            ['Recaudación', resultado['revenue']],
+            ['Ganancia', resultado.get('gains', 'Indefinido')],
+            ['Puntaje de calificación', resultado['vote_average']],
+        ]
+        print("\nDetalles de la película encontrada:")
+        print(tabulate(table_data, headers=['Campo', 'Valor'], tablefmt='grid'))
 
 
 def print_req_2(control):
     """
         Función que imprime la solución del Requerimiento 2 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 2
     pass
-
 
 def print_req_3(control):
     """
@@ -64,8 +107,34 @@ def print_req_4(control):
     """
         Función que imprime la solución del Requerimiento 4 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 4
-    pass
+    status = input("Ingrese el estado de producción de la película (ej.: 'Released', 'Rumored', etc.): ")
+    fecha_i = input("Ingrese la fecha inicial (formato YYYY-MM-DD): ")
+    fecha_f = input("Ingrese la fecha final (formato YYYY-MM-DD): ")
+
+    resultado = logic.req_4(control, status, fecha_i, fecha_f)
+    
+    if resultado[0] == 0 or resultado == None:
+        print("No se encontraron películas que cumplan con los criterios.")
+    else:
+        print("Número total de películas que cumplen con el criterio: " + str(resultado[0]))
+        print("Tiempo promedio de duración de las películas: " + str(resultado[1]) + " minutos")
+        print("\nDetalles de las primeras películas encontradas (hasta 10):")
+        
+        table_data = []
+        for movie in resultado[2]['elements']:
+            table_data.append([
+                movie['release_date'],
+                movie['title'],
+                movie['budget'],
+                movie['revenue'],
+                str(movie.get('gains', 'Indefinido')),
+                movie['runtime'],
+                movie['vote_average'],
+                movie['original_language']
+            ])
+
+        headers = ['Fecha de publicación', 'Título original', 'Presupuesto', 'Recaudación', 'Ganancia', 'Duración (min)', 'Puntaje de calificación', 'Idioma original']
+        print(tabulate(table_data, headers=headers, tablefmt='grid'))
 
 
 def print_req_5(control):
