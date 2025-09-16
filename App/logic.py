@@ -128,7 +128,7 @@ def req_2(catalog,medio):
     """
     Retorna el resultado del requerimiento 2
     """
-    #funcar
+    
     inicio=get_time()
     catalog=trans_datos(catalog)
     cantidad=0
@@ -147,15 +147,14 @@ def req_2(catalog,medio):
             distancia+=catalog["trip_distance"][i]
             pedajes+=catalog["tolls_amount"][i]
             cantidad_pasajeros[catalog["passenger_count"][i]]=cantidad_pasajeros.get(catalog["passenger_count"][i],0)+1
-            cantidad_finalizacion=[catalog["dropoff_datetime"][i].date()]=cantidad_finalizacion.get(catalog["dropoff_datetime"][i].date(),0)+1
-            catalog["dropoff_datetime"].date()
+            cantidad_finalizacion=[catalog["dropoff_datetime"][i]]=cantidad_finalizacion.get(catalog["dropoff_datetime"][i],0)+1
             if cantidad==1:
                 mayor=catalog["passenger_count"][i]
-                repetido=catalog["dropoff_datetime"][i].date()
+                repetido=catalog["dropoff_datetime"][i]
             elif cantidad_pasajeros[catalog["passenger_count"][i]]>cantidad_pasajeros[mayor]:
                 mayor=catalog["passenger_count"][i]
-            elif cantidad_finalizacion[catalog["dropoff_datetime"].date()]>cantidad_finalizacion[repetido]:
-                repetido=catalog["dropoff_datetime"].date()
+            elif cantidad_finalizacion[catalog["dropoff_datetime"]]>cantidad_finalizacion[repetido]:
+                repetido=catalog["dropoff_datetime"]
             propina+=catalog["tip_amount"][i]
             tiempo+=(catalog["dropoff_datetime"][i]-catalog["pickup_datetime"][i])
     dic={"num_trayectos":cantidad,"tiempo_promedio":tiempo/cantidad,"costo_promedio":costo/cantidad,"pasajeros_frec":str(mayor)+" - "+str(cantidad_pasajeros[mayor]),"propina_promedio":propina/cantidad,"fecha_mas trayectos":repetido}
@@ -173,12 +172,48 @@ def req_3(catalog):
     pass
 
 
-def req_4(catalog):
+def req_4(catalog,filtro,f1,f2):
     """
     Retorna el resultado del requerimiento 4
     """
-    # TODO: Modificar el requerimiento 4
-    pass
+    inicio=get_time()
+    data={}
+    archivo=load_data(data,"nyc-neighborhoods.csv")
+    catalog=trans_datos(catalog)
+    cantidad=0
+    cant_barrios={}
+    res={}
+    for i in range(0,len(catalog["pikup_datetime"])):
+        if catalog["pickup_longitude"][i]!=catalog["dropoff_longitude"][i] or catalog["pickup_latitude"][i]!=catalog["dropoff_latitude"][i]:
+            dic={"inicio":catalog["pickup_longitude"][i],"inicio2":catalog["pickup_latitude"][i],"final":catalog["dropoff_longitude"][i],"final2":catalog["dropoff_latitude"][i]}
+            if catalog["pikup_datetime"][i]>=datetime.strptime(f1, "%Y-%m-%d %H:%M:%S") and catalog["pikup_datetime"][i]<=datetime.strptime(f2, "%Y-%m-%d %H:%M:%S"):
+                cant_barrios[dic]={"cantidad":cant_barrios.get(dic["cantidad"],0)+1, "distancia":cant_barrios.get(dic["distancia"],0)+catalog["trip_distance"][i],\
+                    "tiempo":cant_barrios.get(dic["tiempo"],0)+(catalog["dropoff_datetime"][i]-catalog["pickup_datetime"][i]),"costo":cant_barrios.get(dic["cantidad"],0)+catalog["total_amount"][i]\
+                        ,"promedio":cant_barrios[mayor]["costo"]/cant_barrios[mayor]["cantidad"]}
+                    
+                if cantidad==0:
+                    mayor=dic
+                    menor=dic
+                elif cant_barrios[dic]["promedio"]>cant_barrios[mayor]:
+                    mayor=dic
+                elif cant_barrios[dic]["promedio"]<cant_barrios[menor]:
+                    menor=dic
+    for i in range(0,len(0,archivo["latitude"])):
+        if filtro=="MAYOR":
+            if mayor["inicio2"]==archivo["latitude"][i] and mayor["inicio"]==archivo["longitude"][i]:
+                res["barrio_inicial"]=archivo["neighborhood"][i]
+            if mayor["final2"]==archivo["latitude"][i] and mayor["final"]==archivo["longitude"][i]:
+                res["barrio_final"]=archivo["neighborhood"][i]
+            res={"promedio_distancia":(cant_barrios[mayor]["distancia"]/cant_barrios[mayor]["cantidad"]),"cantidad":cant_barrios[mayor]["cantidad"],"tiempo_promedio":(cant_barrios[mayor]["tiempo"]/cant_barrios[mayor]["cantidad"]),"promedio_costo":cant_barrios[mayor]["promedio"]}
+        elif filtro=="MENOR":
+            if menor["inicio2"]==archivo["latitude"][i] and menor["inicio"]==archivo["longitude"][i]:
+                res["barrio_inicial"]=archivo["neighborhood"][i]
+            if menor["final2"]==archivo["latitude"][i] and menor["final"]==archivo["longitude"][i]:
+                res["barrio_final"]=archivo["neighborhood"][i]
+            res={"promedio_distancia":(cant_barrios[menor]["distancia"]/cant_barrios[menor]["cantidad"]),"cantidad":cant_barrios[menor]["cantidad"],"tiempo_promedio":(cant_barrios[menor]["tiempo"]/cant_barrios[menor]["cantidad"]),"promedio_costo":cant_barrios[menor]["promedio"]}
+    return res
+            
+            
 
 
 def req_5(catalog):
