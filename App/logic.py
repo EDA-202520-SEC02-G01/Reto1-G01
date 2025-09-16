@@ -1,6 +1,7 @@
 import time
 import csv
 import sys
+import datetime
 
 csv.field_size_limit(2147483647)
 default_limit = 1000
@@ -15,64 +16,70 @@ def new_logic():
 
 # Funciones para la carga de datos
 
-def load_data(catalog, filename):
-    """
-    Carga los datos del reto
-    """
-    archivo=open(filename,"r")
-    titulos=archivo.readline()
-    linea=archivo.readline()
-    while len(linea)>0:
-        for i in range(0,len(titulos)):
-            datos=linea.split(",")
-            catalog[titulos[i]].append(datos[i])
-        linea=archivo.readline()
-    archivo.close
-    return catalog
-        
-def reporte(catalog, filename):
-    inicio=get_time()
-    datos=load_data(catalog, filename)
-    final=get_data()
-    tiempo=delta_time(inicio,final)
-    for columnas in datos.keys():
-        if columnas=="trip_distance":
-            dismayor=datos[columnas][0]
-            posmayor=0
-            dismenor=datos[columnas][0]
-            posmenor=0
-            for i in range(0,datos[columnas]):
-                dis=datos[columnas][i]
-                if dismenor>dis:
-                    dismenor=dis
-                    posmenor=i
-                if dismayor<dis:
-                    dismayor=dis
-                    posmayor=i
-    trayecto_menordis=[datos["pickup_datetime"][posmenor],dismenor, datos["total_amount"][posmenor]]
-    trayecto_mayordis=[datos["pickup_datetime"][posmayor],dismayor, datos["total_amount"][posmayor]]
-    primeros_5t={"pickup_datetime":datos["pickup_datetime"][0:6],"dropoff_datetime":datos["dropoff_datetime"][0:6],"trip_distance":datos["trip_distance"][0:6],"":[] }
-                
-                
-
-# Funciones de consulta sobre el catálogo
-
-def get_data(catalog, id):
-    """
-    Retorna un dato por su ID.
-    """
-    dic={}
-    for columnas in catalog.key():
-        dic[columnas]=catalog[columnas][id]
-    return dict
-
-
-def req_1(catalog):
+def req_1(catalog, pasajeros):
     """
     Retorna el resultado del requerimiento 1
     """
-    # TODO: Modificar el requerimiento 1
-    pass
+    res={}
+    conteo_fecha={}
+    propina=0
+    cuenta_mediopago={}
+    peajes=0
+    distancia=0
+    tiempo=0
+    costo_total=0
+    cuentapasajeros=0 
+    for i in range(0,len(catalog["passenger_count"])):
+        if catalog["passenger_count"][i]== pasajeros:
+            cuentapasajeros+=1
+            duracion=catalog["dropoff_datetime"][i]-catalog["pickup_datetime"][i]
+            tiempo+=duracion
+            costo_total+=catalog["total_amount"][i]
+            distancia+=catalog["trip_distance"][i]
+            peajes+=catalog["tolls_amount"][i]
+            modo_pago=catalog["payment_type"][i]
+            cuenta_mediopago[modo_pago]=cuenta_mediopago.get(modo_pago,0)+1
+            propina+=catalog["tip_amount"]
+            fecha=catalog["pickup_datetime"][i].date()
+            conteo_fecha[fecha]=conteo_fecha.get(fecha,0)+1
+            
+            
+            
+    tiempo=tiempo/cuentapasajeros
+    tiempo=tiempo.total_seconds()/60
+    costo_total=costo_total/cuentapasajeros
+    distancia=distancia/cuentapasajeros
+    peajes=peajes/cuentapasajeros
+    mayor=max(cuenta_mediopago, key=cuenta_mediopago.get)
+    mas_usado= f"{mayor} - {cuenta_mediopago[mayor]}"
+    propina=propina/cuentapasajeros
+    mas_frecuente=max(conteo_fecha,key=conteo_fecha.get)
+    fecha_inicio_max= f"{mas_frecuente} - {conteo_fecha[mas_frecuente]}"
+    
+            
+     
+          
+    res["filtro de pasajeros"]=cuentapasajeros
+    res["promedio de tiempo"]=tiempo  
+    res["promedio de costoTotal"]=costo_total 
+    res["distancia promedio"]=distancia
+    res["promedio pagos en peajes"]=peajes
+    res["medio de pago mas usado"]=mas_usado
+    res["promedio de propina"]=propina
+    res["fecha de inicio con mayor frecuencia"]=fecha_inicio_max
+    
+    return res 
+    
+    
+    
+    
+    
+    
+    
+    
+                
+        
+    
 
 
 def req_2(catalog,medio):
