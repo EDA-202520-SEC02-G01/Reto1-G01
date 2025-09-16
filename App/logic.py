@@ -56,7 +56,7 @@ def reporte(catalog, filename):
                     posmayor=i
     trayecto_menordis=[datos["pickup_datetime"][posmenor],dismenordatos["total_amount"][posmenor]]
     trayecto_mayordis=[datos["pickup_datetime"][posmayor],dismayor, datos["total_amount"][posmayor]]
-    primeros_5t={"pickup_datetime":datos["pickup_datetime"][0:6],"dropoff_datetime":datos["dropoff_datetime"][0:6],"trip_distance":datos["trip_distance"][0:6],"":[] }
+    primeros_5t={"pickup_datetime":datos["pickup_datetime"][0:6],"dropoff_datetime":datos["dropoff_datetime"][0:6],"trip_distance":datos["trip_distance"][0:6],"":[]}
 
 
 def new_logic():
@@ -72,6 +72,7 @@ def req_1(catalog, pasajeros):
     """
     Retorna el resultado del requerimiento 1
     """
+    catalog=trans_datos(catalog)
     inicio=get_time()
     res={}
     conteo_fecha={}
