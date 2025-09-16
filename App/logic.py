@@ -34,6 +34,7 @@ def trans_datos(catalog):
     catalog["tolls_amount"] = float(catalog["tolls_amount"])
     catalog["improvement_surcharge"]=float(catalog["improvement_surcharge"])
     catalog["total_amount"] = float(catalog["total_amount"])
+    return catalog
        
 def reporte(catalog, filename):
     inicio=get_time()
@@ -72,8 +73,8 @@ def req_1(catalog, pasajeros):
     """
     Retorna el resultado del requerimiento 1
     """
-    catalog=trans_datos(catalog)
     inicio=get_time()
+    catalog=trans_datos(catalog)
     res={}
     conteo_fecha={}
     propina=0
@@ -108,8 +109,6 @@ def req_1(catalog, pasajeros):
     mas_frecuente=max(conteo_fecha,key=conteo_fecha.get)
     fecha_inicio_max= f"{mas_frecuente} - {conteo_fecha[mas_frecuente]}"
 
-
-          
     res["filtro de pasajeros"]=cuentapasajeros
     res["promedio de tiempo"]=tiempo  
     res["promedio de costoTotal"]=costo_total 
@@ -131,6 +130,7 @@ def req_2(catalog,medio):
     """
     #funcar
     inicio=get_time()
+    catalog=trans_datos(catalog)
     cantidad=0
     costo=1
     distancia=0
