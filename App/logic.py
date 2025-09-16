@@ -30,6 +30,30 @@ def load_data(catalog, filename):
     archivo.close
     return catalog
         
+def reporte(catalog, filename):
+    inicio=get_time()
+    datos=load_data(catalog, filename)
+    final=get_data()
+    tiempo=delta_time(inicio,final)
+    for columnas in datos.keys():
+        if columnas=="trip_distance":
+            dismayor=datos[columnas][0]
+            posmayor=0
+            dismenor=datos[columnas][0]
+            posmenor=0
+            for i in range(0,datos[columnas]):
+                dis=datos[columnas][i]
+                if dismenor>dis:
+                    dismenor=dis
+                    posmenor=i
+                if dismayor<dis:
+                    dismayor=dis
+                    posmayor=i
+    trayecto_menordis=[datos["pickup_datetime"][posmenor],dismenor, datos["total_amount"][posmenor]]
+    trayecto_mayordis=[datos["pickup_datetime"][posmayor],dismayor, datos["total_amount"][posmayor]]
+    primeros_5t={"pickup_datetime":datos["pickup_datetime"][0:6],"dropoff_datetime":datos["dropoff_datetime"][0:6],"trip_distance":datos["trip_distance"][0:6],"":[] }
+                
+                
 
 # Funciones de consulta sobre el catálogo
 
@@ -37,8 +61,10 @@ def get_data(catalog, id):
     """
     Retorna un dato por su ID.
     """
-    #TODO: Consulta en las Llamar la función del modelo para obtener un dato
-    pass
+    dic={}
+    for columnas in catalog.key():
+        dic[columnas]=catalog[columnas][id]
+    return dict
 
 
 def req_1(catalog):
