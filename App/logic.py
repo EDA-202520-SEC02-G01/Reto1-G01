@@ -7,6 +7,45 @@ csv.field_size_limit(2147483647)
 default_limit = 1000
 sys.setrecursionlimit(default_limit*10)
 
+def load_data(catalog, filename):
+    """
+    Carga los datos del reto
+    """
+    archivo=open(filename,"r")
+    titulos=archivo.readline()
+    linea=archivo.readline()
+    while len(linea)>0:
+        for i in range(0,len(titulos)):
+            datos=linea.split(",")
+            catalog[titulos[i]].append(datos[i])
+        linea=archivo.readline()
+    archivo.close
+    return catalog
+        
+def reporte(catalog, filename):
+    inicio=get_time()
+    datos=load_data(catalog, filename)
+    final=get_data()
+    tiempo=delta_time(inicio,final)
+    for columnas in datos.keys():
+        if columnas=="trip_distance":
+            dismayor=datos[columnas][0]
+            posmayor=0
+            dismenor=datos[columnas][0]
+            posmenor=0
+            for i in range(0,datos[columnas]):
+                dis=datos[columnas][i]
+                if dismenor>dis:
+                    dismenor=dis
+                    posmenor=i
+                if dismayor<dis:
+                    dismayor=dis
+                    posmayor=i
+    trayecto_menordis=[datos["pickup_datetime"][posmenor],dismenordatos["total_amount"][posmenor]]
+    trayecto_mayordis=[datos["pickup_datetime"][posmayor],dismayor, datos["total_amount"][posmayor]]
+    primeros_5t={"pickup_datetime":datos["pickup_datetime"][0:6],"dropoff_datetime":datos["dropoff_datetime"][0:6],"trip_distance":datos["trip_distance"][0:6],"":[] }
+
+
 def new_logic():
     """
     Crea el catalogo para almacenar las estructuras de datos
@@ -20,6 +59,7 @@ def req_1(catalog, pasajeros):
     """
     Retorna el resultado del requerimiento 1
     """
+    get_time()
     res={}
     conteo_fecha={}
     propina=0
@@ -152,4 +192,3 @@ def delta_time(start, end):
     """
     elapsed = float(end - start)
     return elapsed
-
