@@ -20,8 +20,32 @@ def load_data(catalog, filename):
     """
     Carga los datos del reto
     """
-    # TODO: Realizar la carga de datos
-    pass
+    archivo=open(filename,"r")
+    titulos=archivo.readline()
+    linea=archivo.readline()
+    while len(linea)>0:
+        datos=linea.split(",")
+        catalog["pickup_datetim"].append(datos[1])
+        catalog["dropoff_datetime"].append(datos[2])
+        catalog["passenger_count"].append(datos[3])
+        catalog["trip_distance"].append(datos[4])
+        catalog["pickup_longitude"].append(datos[5])
+        catalog["pickup_latitude"].append(datos[6])
+        catalog["rate_code"].append(datos[7])
+        catalog["dropoff_longitude"].append(datos[8])
+        catalog["dropoff_latitude"].append(datos[9])
+        catalog["payment_type"].append(datos[10])
+        catalog["fare_amount"].append(datos[11])
+        catalog["extra"].append(datos[12])
+        catalog["mta_tax"].append(datos[13])
+        catalog["tip_amount"].append(datos[14])
+        catalog["tolls_amount"].append(datos[15])
+        catalog["improvement_surcharg"].append(datos[16])
+        catalog["total_amount"].append(datos[17])
+        linea=archivo.readline()
+    archivo.close
+    return catalog
+        
 
 # Funciones de consulta sobre el catálogo
 
