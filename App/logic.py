@@ -211,6 +211,9 @@ def req_4(catalog,filtro,f1,f2):
             if menor["final2"]==archivo["latitude"][i] and menor["final"]==archivo["longitude"][i]:
                 res["barrio_final"]=archivo["neighborhood"][i]
             res={"promedio_distancia":(cant_barrios[menor]["distancia"]/cant_barrios[menor]["cantidad"]),"cantidad":cant_barrios[menor]["cantidad"],"tiempo_promedio":(cant_barrios[menor]["tiempo"]/cant_barrios[menor]["cantidad"]),"promedio_costo":cant_barrios[menor]["promedio"]}
+    final=get_time()
+    tiempo=delta_time(inicio,final)
+    res["tiempo_funcion"]=tiempo
     return res
             
             
