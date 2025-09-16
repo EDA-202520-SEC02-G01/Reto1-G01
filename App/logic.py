@@ -1,13 +1,17 @@
 import time
+import csv
+import sys
 
+csv.field_size_limit(2147483647)
+default_limit = 1000
+sys.setrecursionlimit(default_limit*10)
 
 def new_logic():
     """
     Crea el catalogo para almacenar las estructuras de datos
     """
-    #TODO: Llama a las funciónes de creación de las estructuras de datos
-    pass
-
+    catalogo={"pickup_datetim":[],"dropoff_datetime":[],"passenger_count":[],"trip_distance":[],"pickup_longitude":[],"pickup_latitude":[],"rate_code":[],"dropoff_longitude":[],"dropoff_latitude":[],"payment_type":[],"fare_amount":[],"extra":[],"mta_tax":[],"tip_amount":[],"tolls_amount":[],"improvement_surcharg":[],"total_amount":[]}
+    return catalogo
 
 # Funciones para la carga de datos
 
