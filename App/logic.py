@@ -120,28 +120,3 @@ def delta_time(start, end):
     elapsed = float(end - start)
     return elapsed
 
-
-def new_logic():
-    """
-    Crea el catálogo para almacenar las estructuras de datos.
-    """
-    campos = [
-        "pickup_datetim", "dropoff_datetime", "passenger_count", "trip_distance",
-        "pickup_longitude", "pickup_latitude", "rate_code", "dropoff_longitude",
-        "dropoff_latitude", "payment_type", "fare_amount", "extra", "mta_tax",
-        "tip_amount", "tolls_amount", "improvement_surcharg", "total_amount"
-    ]
-    return {campo: [] for campo in campos}
-
-def load_data(catalog, filename):
-    """
-    Carga los datos del reto desde un archivo CSV.
-    """
-    with open(filename, "r") as archivo:
-        titulos = archivo.readline().strip().split(",")
-        for linea in archivo:
-            datos = linea.strip().split(",")
-            for i, campo in enumerate(catalog.keys()):
-                if i + 1 < len(datos):  # Evita errores si hay columnas faltantes
-                    catalog[campo].append(datos[i + 1])
-    return catalog
