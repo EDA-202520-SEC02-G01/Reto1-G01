@@ -164,12 +164,63 @@ def req_2(catalog,medio):
     return dic
     
     
-def req_3(catalog):
+def req_3(catalog, valor_min, valor_max):
     """
     Retorna el resultado del requerimiento 3
     """
-    # TODO: Modificar el requerimiento 3
-    pass
+    inicio = get_time()
+    catalog = trans_datos(catalog)
+    total_trayectos = 0
+    tiempo_promedio = 0
+    costo_promedio = 0
+    distancia_promedio = 0
+    peajes_promedio = 0
+    propina_promedio = 0
+    pasajeros_frecuentes = {}
+    fecha_finalizacion = {}
+
+    for i in range(len(catalog["total_amount"])):
+        pago = catalog["total_amount"][i]
+        if valor_min <= pago and pago <= valor_max:
+            total_trayectos += 1
+            duracion = catalog["dropoff_datetime"][i] - catalog["pickup_datetime"][i]
+            tiempo_promedio += duracion.total_seconds() / 60
+            costo_promedio += pago
+            distancia_promedio += catalog["trip_distance"][i]
+            peajes_promedio += catalog["tolls_amount"][i]
+            propina_promedio += catalog["tip_amount"][i]
+            pasajeros = catalog["passenger_count"][i]
+            pasajeros_frecuentes[pasajeros] = pasajeros_frecuentes.get(pasajeros, 0) + 1
+            fecha = catalog["dropoff_datetime"][i].date()
+            fecha_finalizacion[fecha] = fecha_finalizacion.get(fecha, 0) + 1
+            
+    if total_trayectos == 0:
+        dicc = {
+            "total_trayectos": 0,
+            "tiempo_promedio": 0,
+            "costo_promedio": 0,
+            "distancia_promedio": 0,
+            "peajes_promedio": 0,
+            "pasajeros_frecuentes": "N/A",
+            "propina_promedio": 0,
+            "fecha_finalizacion": "N/A",
+            "tiempo_ejecucion": delta_time(inicio, get_time())
+        }
+    else:
+        pasajero_mas_frec = max(pasajeros_frecuentes, key=pasajeros_frecuentes.get)
+        fecha_mas_frec = max(fecha_finalizacion, key=fecha_finalizacion.get)
+        dicc = {
+            "total_trayectos": total_trayectos,
+            "tiempo_promedio": tiempo_promedio / total_trayectos,
+            "costo_promedio": costo_promedio / total_trayectos,
+            "distancia_promedio": distancia_promedio / total_trayectos,
+            "peajes_promedio": peajes_promedio / total_trayectos,
+            "pasajeros_frecuentes": f"{pasajero_mas_frec} - {pasajeros_frecuentes[pasajero_mas_frec]}",
+            "propina_promedio": propina_promedio / total_trayectos,
+            "fecha_finalizacion": fecha_mas_frec.strftime("%Y-%m-%d"),
+            "tiempo_ejecucion": delta_time(inicio, get_time())
+    }
+    return dicc
 
 
 def req_4(catalog,filtro,f1,f2):
