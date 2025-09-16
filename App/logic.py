@@ -122,14 +122,46 @@ def req_1(catalog, pasajeros):
     
 
 
-def req_2(catalog):
+def req_2(catalog,medio):
     """
     Retorna el resultado del requerimiento 2
     """
-    # TODO: Modificar el requerimiento 2
-    pass
-
-
+    #funcar
+    inicio=get_time()
+    cantidad=0
+    costo=1
+    distancia=0
+    pedajes=0
+    cantidad_pasajeros={}
+    mayor=0
+    propina=0
+    cantidad_finalizacion={}
+    tiempo=0
+    for i in range(0,len(catalog["payment_type "])):
+        if catalog["payment_type "][i]==medio:
+            cantidad+=1
+            costo+=catalog["total_amount"][i]
+            distancia+=catalog["trip_distance"][i]
+            pedajes+=catalog["tolls_amount"][i]
+            cantidad_pasajeros[catalog["passenger_count"][i]]=cantidad_pasajeros.get(catalog["passenger_count"][i],0)+1
+            cantidad_finalizacion=[catalog["dropoff_datetime"][i].date()]=cantidad_finalizacion.get(catalog["dropoff_datetime"][i].date(),0)+1
+            catalog["dropoff_datetime"].date()
+            if cantidad==1:
+                mayor=catalog["passenger_count"][i]
+                repetido=catalog["dropoff_datetime"][i].date()
+            elif cantidad_pasajeros[catalog["passenger_count"][i]]>cantidad_pasajeros[mayor]:
+                mayor=catalog["passenger_count"][i]
+            elif cantidad_finalizacion[catalog["dropoff_datetime"].date()]>cantidad_finalizacion[repetido]:
+                repetido=catalog["dropoff_datetime"].date()
+            propina+=catalog["tip_amount"][i]
+            tiempo+=(catalog["dropoff_datetime"][i]-catalog["pickup_datetime"][i])
+    dic={"num_trayectos":cantidad,"tiempo_promedio":tiempo/cantidad,"costo_promedio":costo/cantidad,"pasajeros_frec":str(mayor)+" - "+str(cantidad_pasajeros[mayor]),"propina_promedio":propina/cantidad,"fecha_mas trayectos":repetido}
+    final=get_time()
+    tiempo=delta_time(final,inicio)
+    dic["Tiempo"]=tiempo
+    return dic
+    
+    
 def req_3(catalog):
     """
     Retorna el resultado del requerimiento 3
