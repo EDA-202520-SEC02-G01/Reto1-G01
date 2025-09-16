@@ -21,7 +21,20 @@ def load_data(catalog, filename):
         linea=archivo.readline()
     archivo.close
     return catalog
-        
+
+def trans_datos(catalog):
+    catalog["pickup_datetime"] = datetime.strptime(catalog["pickup_datetime"], "%Y-%m-%d %H:%M:%S")
+    catalog["dropoff_datetime"] = datetime.strptime(catalog["dropoff_datetime"], "%Y-%m-%d %H:%M:%S")
+    catalog["passenger_count"] = int(catalog["passenger_count"])
+    catalog["trip_distance"] = float(catalog["trip_distance"])
+    catalog["rate_code"]=int(catalog["rate_code"])
+    catalog["extra"]=float(catalog["extra"])
+    catalog["mta_tax"]=float(catalog["mta_tax"])
+    catalog["tip_amount"] = float(catalog["tip_amount"])
+    catalog["tolls_amount"] = float(catalog["tolls_amount"])
+    catalog["improvement_surcharge"]=float(catalog["improvement_surcharge"])
+    catalog["total_amount"] = float(catalog["total_amount"])
+       
 def reporte(catalog, filename):
     inicio=get_time()
     datos=load_data(catalog, filename)
@@ -59,7 +72,7 @@ def req_1(catalog, pasajeros):
     """
     Retorna el resultado del requerimiento 1
     """
-    get_time()
+    inicio=get_time()
     res={}
     conteo_fecha={}
     propina=0
@@ -82,9 +95,7 @@ def req_1(catalog, pasajeros):
             propina+=catalog["tip_amount"]
             fecha=catalog["pickup_datetime"][i].date()
             conteo_fecha[fecha]=conteo_fecha.get(fecha,0)+1
-            
-            
-            
+                   
     tiempo=tiempo/cuentapasajeros
     tiempo=tiempo.total_seconds()/60
     costo_total=costo_total/cuentapasajeros
@@ -95,9 +106,8 @@ def req_1(catalog, pasajeros):
     propina=propina/cuentapasajeros
     mas_frecuente=max(conteo_fecha,key=conteo_fecha.get)
     fecha_inicio_max= f"{mas_frecuente} - {conteo_fecha[mas_frecuente]}"
-    
-            
-     
+
+
           
     res["filtro de pasajeros"]=cuentapasajeros
     res["promedio de tiempo"]=tiempo  
@@ -107,20 +117,12 @@ def req_1(catalog, pasajeros):
     res["medio de pago mas usado"]=mas_usado
     res["promedio de propina"]=propina
     res["fecha de inicio con mayor frecuencia"]=fecha_inicio_max
+    final=get_time()
+    tiempo=delta_time(inicio,final)
+    res["tiempo"]=tiempo
     
     return res 
     
-    
-    
-    
-    
-    
-    
-    
-                
-        
-    
-
 
 def req_2(catalog,medio):
     """
@@ -223,4 +225,5 @@ def delta_time(start, end):
     devuelve la diferencia entre tiempos de procesamiento muestreados
     """
     elapsed = float(end - start)
+    
     return elapsed
