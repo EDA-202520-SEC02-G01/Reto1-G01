@@ -1,12 +1,17 @@
+from gettext import Catalog
 import sys
-
+import logic
+import datetime
 
 def new_logic():
     """
         Se crea una instancia del controlador
     """
     #TODO: Llamar la función de la lógica donde se crean las estructuras de datos
-    pass
+    new_logic()
+    
+
+    
 
 def print_menu():
     print("Bienvenido")
@@ -21,12 +26,13 @@ def print_menu():
     print("9- Ejecutar Requerimiento 8 (Bono)")
     print("0- Salir")
 
-def load_data(control):
+def load_data(catalog):
     """
     Carga los datos
     """
     #TODO: Realizar la carga de datos
-    pass
+    filename=input("nombre del archivo:")
+    load_data(catalog, filename)
 
 
 def print_data(control, id):
@@ -34,46 +40,64 @@ def print_data(control, id):
         Función que imprime un dato dado su ID
     """
     #TODO: Realizar la función para imprimir un elemento
-    pass
+    print()
 
-def print_req_1(control):
+def print_req_1(catalog):
     """
         Función que imprime la solución del Requerimiento 1 en consola
     """
-    # TODO: Imprimir el resultado del requerimiento 1
-    pass
+    pasajeros=int(input("numero de pasajeros:"))
+    print(logic.req_1(catalog, pasajeros))
+
+    
 
 
-def print_req_2(control):
+def print_req_2(catalog):
     """
         Función que imprime la solución del Requerimiento 2 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 2
-    pass
+    medio=input("medio de pago:")
+    print=logic.req_2(catalog,medio)
+    
 
 
-def print_req_3(control):
+def print_req_3(catalog):
     """
         Función que imprime la solución del Requerimiento 3 en consola
     """
+    valor_min=float(input("valor minimo:"))
+    valor_max=float(input("valor maximo;"))
     # TODO: Imprimir el resultado del requerimiento 3
+    print(logic.req_3(catalog, valor_min, valor_max))
     pass
 
 
-def print_req_4(control):
+def print_req_4(catalog):
     """
         Función que imprime la solución del Requerimiento 4 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 4
-    pass
+    filtro=input("Ingresa un filtro, tiene que ser MAXIMO O MINIMO")
+    f1=input("ingresa la fecha inicio en formato YYYY/MM/DD")
+    f2=input("ingresa la fecha final en formato YYYY/MM/DD")
+    datetime.date(f1)
+    datetime.date(f2)
+    print(logic.req_4(catalog,filtro,f1,f2))
 
 
-def print_req_5(control):
+def print_req_5(catalog):
     """
         Función que imprime la solución del Requerimiento 5 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 5
-    pass
+    filtro=input("Ingresa un filtro, tiene que ser MAXIMO O MINIMO")
+    f1=input("ingresa la fecha inicio en formato YYYY/MM/DD")
+    f2=input("ingresa la fecha final en formato YYYY/MM/DD")
+    datetime.date(f1)
+    datetime.date(f2)
+    print(logic.req_5(Catalog, filtro, f1, f2))
+    
 
 
 def print_req_6(control):
