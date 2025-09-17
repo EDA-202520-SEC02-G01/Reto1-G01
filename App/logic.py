@@ -219,7 +219,7 @@ def req_4(catalog,filtro,f1,f2):
                 catalog["pickup_latitude"][i],\
                 catalog["dropoff_longitude"][i],\
                 catalog["dropoff_latitude"][i])
-            if catalog["pikup_datetime"][i].date()>=datetime.strptime(f1, "%Y-%m-%d").date() and catalog["pikup_datetime"][i].date()<=datetime.strptime(f2, "%Y-%m-%d").date():
+            if catalog["pickup_datetime"][i].date()>=datetime.strptime(f1, "%Y-%m-%d").date() and catalog["pickup_datetime"][i].date()<=datetime.strptime(f2, "%Y-%m-%d").date():
                 if dic not in cant_barrios:
                     cant_barrios[dic]={
                     "cantidad":0, 
