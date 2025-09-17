@@ -95,7 +95,7 @@ def req_1(catalog, pasajeros):
             modo_pago=catalog["payment_type"][i]
             cuenta_mediopago[modo_pago]=cuenta_mediopago.get(modo_pago,0)+1
             propina+=catalog["tip_amount"]
-            fecha=catalog["pickup_datetime"][i].date()
+            fecha=datetime.syrptime(catalog["pickup_datetime"][i,"%Y-%m-%d %H:%M:%S"])
             conteo_fecha[fecha]=conteo_fecha.get(fecha,0)+1
                    
     tiempo=tiempo/cuentapasajeros
@@ -181,12 +181,53 @@ def req_4(catalog):
     pass
 
 
-def req_5(catalog):
+def req_5(catalog, filtro, f1, f2):
     """
     Retorna el resultado del requerimiento 5
     """
-    # TODO: Modificar el requerimiento 5
-    pass
+    res={}
+    franjas={}
+    for i in range(0, len(catalog["pickup_datetime"])):
+        if catalog["pickup_datetime"][i]>=f1 and catalog["pickup_datetime"][i]<=f2:
+            hora=catalog["pickup_datetime"][i].hour
+            duracion = (catalog["dropoff_datetime"][i] - catalog["pickup_datetime"][i]).total_seconds() / 60
+            costo = catalog["total_amount"][i]
+            pasajeros = catalog["passenger_count"][i]
+            if hora not in franjas:
+                franjas[hora]={"conteo":0, "suma_costos":0,"suma_duracion":0, "suma_pasajeros":0, "max_costo":costo, "min_costo":costo}
+            franjas[hora]["suma_costos"] += costo
+            franjas[hora]["conteo"] += 1
+            franjas[hora]["suma_duracion"] += duracion
+            franjas[hora]["suma_pasajeros"] += pasajeros
+    for hora in franjas:
+        franjas[hora]["costo_promedio"]=franjas[hora]["suma_costos"]/franjas[hora]["conteo"]
+        franjas[hora]["duracion_promedio"] = franjas[hora]["suma_duracion"] / franjas[hora]["conteo"]
+        franjas[hora]["pasajeros_promedio"] = franjas[hora]["suma_pasajeros"] / franjas[hora]["conteo"]
+    
+    if filtro == "MAYOR":
+        filt = min(franjas, key=lambda hora: franjas[hora]["costo_promedio"])
+        resf=franjas[filt]
+    else:
+        filt = max(franjas, key=lambda hora: franjas[hora]["costo_promedio"])
+        resf=franjas[filt]
+    
+    res["filtro"]=filtro
+    res["franja_de_horas"]=[filt,filt+1]
+    res["max_o_min_franja"]=resf
+        
+    
+    
+    return res  
+        
+        
+
+    
+                
+            
+        
+            
+        
+    
 
 def req_6(catalog):
     """
