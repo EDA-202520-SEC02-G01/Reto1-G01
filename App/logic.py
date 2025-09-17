@@ -23,42 +23,15 @@ def load_data(catalog, filename):
     return catalog
 
 def trans_datos(catalog):
-    catalog["pickup_datetime"] = datetime.strptime(catalog["pickup_datetime"], "%Y-%m-%d %H:%M:%S")
-    catalog["dropoff_datetime"] = datetime.strptime(catalog["dropoff_datetime"], "%Y-%m-%d %H:%M:%S")
-    catalog["passenger_count"] = int(catalog["passenger_count"])
-    catalog["trip_distance"] = float(catalog["trip_distance"])
-    catalog["rate_code"]=int(catalog["rate_code"])
-    catalog["extra"]=float(catalog["extra"])
-    catalog["mta_tax"]=float(catalog["mta_tax"])
-    catalog["tip_amount"] = float(catalog["tip_amount"])
-    catalog["tolls_amount"] = float(catalog["tolls_amount"])
-    catalog["improvement_surcharge"]=float(catalog["improvement_surcharge"])
-    catalog["total_amount"] = float(catalog["total_amount"])
+    catalog["pickup_datetime"] = [datetime.strptime(x, "%Y-%m-%d %H:%M:%S") for x in catalog["pickup_datetime"]]
+    catalog["dropoff_datetime"] = [datetime.strptime(x, "%Y-%m-%d %H:%M:%S") for x in catalog["dropoff_datetime"]]
+    catalog["passenger_count"] = [int(x) for x in catalog["passenger_count"]]
+    catalog["trip_distance"] = [float(x) for x in catalog["trip_distance"]]
+    catalog["tip_amount"] = [float(x) for x in catalog["tip_amount"]]
+    catalog["tolls_amount"] = [float(x) for x in catalog["tolls_amount"]]
+    catalog["total_amount"] = [float(x) for x in catalog["total_amount"]]
     return catalog
-       
-def reporte(catalog, filename):
-    inicio=get_time()
-    datos=load_data(catalog, filename)
-    final=get_data()
-    tiempo=delta_time(inicio,final)
-    for columnas in datos.keys():
-        if columnas=="trip_distance":
-            dismayor=datos[columnas][0]
-            posmayor=0
-            dismenor=datos[columnas][0]
-            posmenor=0
-            for i in range(0,datos[columnas]):
-                dis=datos[columnas][i]
-                if dismenor>dis:
-                    dismenor=dis
-                    posmenor=i
-                if dismayor<dis:
-                    dismayor=dis
-                    posmayor=i
-    trayecto_menordis=[datos["pickup_datetime"][posmenor],dismenordatos["total_amount"][posmenor]]
-    trayecto_mayordis=[datos["pickup_datetime"][posmayor],dismayor, datos["total_amount"][posmayor]]
-    primeros_5t={"pickup_datetime":datos["pickup_datetime"][0:6],"dropoff_datetime":datos["dropoff_datetime"][0:6],"trip_distance":datos["trip_distance"][0:6],"":[]}
-
+    
 
 def new_logic():
     """
@@ -95,7 +68,7 @@ def req_1(catalog, pasajeros):
             modo_pago=catalog["payment_type"][i]
             cuenta_mediopago[modo_pago]=cuenta_mediopago.get(modo_pago,0)+1
             propina+=catalog["tip_amount"]
-            fecha=datetime.syrptime(catalog["pickup_datetime"][i,"%Y-%m-%d %H:%M:%S"])
+            fecha=datetime.syrptime(catalog["pickup_datetime"][i],"%Y-%m-%d %H:%M:%S")
             conteo_fecha[fecha]=conteo_fecha.get(fecha,0)+1
                    
     tiempo=tiempo/cuentapasajeros
@@ -132,7 +105,7 @@ def req_2(catalog,medio):
     inicio=get_time()
     catalog=trans_datos(catalog)
     cantidad=0
-    costo=1
+    costo=0
     distancia=0
     pedajes=0
     cantidad_pasajeros={}
@@ -140,24 +113,30 @@ def req_2(catalog,medio):
     propina=0
     cantidad_finalizacion={}
     tiempo=0
-    for i in range(0,len(catalog["payment_type "])):
+    for i in range(0,len(catalog["payment_type"])):
         if catalog["payment_type "][i]==medio:
             cantidad+=1
             costo+=catalog["total_amount"][i]
             distancia+=catalog["trip_distance"][i]
             pedajes+=catalog["tolls_amount"][i]
             cantidad_pasajeros[catalog["passenger_count"][i]]=cantidad_pasajeros.get(catalog["passenger_count"][i],0)+1
-            cantidad_finalizacion=[catalog["dropoff_datetime"][i]]=cantidad_finalizacion.get(catalog["dropoff_datetime"][i],0)+1
+            cantidad_finalizacion=[catalog["dropoff_datetime"][i].date()]=cantidad_finalizacion.get(catalog["dropoff_datetime"][i],0)+1
             if cantidad==1:
                 mayor=catalog["passenger_count"][i]
-                repetido=catalog["dropoff_datetime"][i]
+                repetido=catalog["dropoff_datetime"][i].date()
             elif cantidad_pasajeros[catalog["passenger_count"][i]]>cantidad_pasajeros[mayor]:
                 mayor=catalog["passenger_count"][i]
-            elif cantidad_finalizacion[catalog["dropoff_datetime"]]>cantidad_finalizacion[repetido]:
-                repetido=catalog["dropoff_datetime"]
+            elif cantidad_finalizacion[catalog["dropoff_datetime"][i].date()]>cantidad_finalizacion[repetido]:
+                repetido=catalog["dropoff_datetime"][i].date()
             propina+=catalog["tip_amount"][i]
             tiempo+=(catalog["dropoff_datetime"][i]-catalog["pickup_datetime"][i])
-    dic={"num_trayectos":cantidad,"tiempo_promedio":tiempo/cantidad,"costo_promedio":costo/cantidad,"pasajeros_frec":str(mayor)+" - "+str(cantidad_pasajeros[mayor]),"propina_promedio":propina/cantidad,"fecha_mas trayectos":repetido}
+    tiempo=tiempo/60
+    dic={"num_trayectos":cantidad,
+         "tiempo_promedio":tiempo/cantidad,
+         "costo_promedio":costo/cantidad,
+         "pasajeros_frec":str(mayor)+" - "+str(cantidad_pasajeros[mayor]),
+         "propina_promedio":propina/cantidad,
+         "fecha_mas trayectos":repetido}
     final=get_time()
     tiempo=delta_time(final,inicio)
     dic["Tiempo"]=tiempo
@@ -234,14 +213,27 @@ def req_4(catalog,filtro,f1,f2):
     cantidad=0
     cant_barrios={}
     res={}
-    for i in range(0,len(catalog["pikup_datetime"])):
+    for i in range(0,len(catalog["pickup_datetime"])):
         if catalog["pickup_longitude"][i]!=catalog["dropoff_longitude"][i] or catalog["pickup_latitude"][i]!=catalog["dropoff_latitude"][i]:
-            dic={"inicio":catalog["pickup_longitude"][i],"inicio2":catalog["pickup_latitude"][i],"final":catalog["dropoff_longitude"][i],"final2":catalog["dropoff_latitude"][i]}
-            if catalog["pikup_datetime"][i]>=datetime.strptime(f1, "%Y-%m-%d %H:%M:%S") and catalog["pikup_datetime"][i]<=datetime.strptime(f2, "%Y-%m-%d %H:%M:%S"):
-                cant_barrios[dic]={"cantidad":cant_barrios.get(dic["cantidad"],0)+1, "distancia":cant_barrios.get(dic["distancia"],0)+catalog["trip_distance"][i],\
-                    "tiempo":cant_barrios.get(dic["tiempo"],0)+(catalog["dropoff_datetime"][i]-catalog["pickup_datetime"][i]),"costo":cant_barrios.get(dic["cantidad"],0)+catalog["total_amount"][i]\
-                        ,"promedio":cant_barrios[mayor]["costo"]/cant_barrios[mayor]["cantidad"]}
+            dic=(catalog["pickup_longitude"][i],\
+                catalog["pickup_latitude"][i],\
+                catalog["dropoff_longitude"][i],\
+                catalog["dropoff_latitude"][i])
+            if catalog["pikup_datetime"][i].date()>=datetime.strptime(f1, "%Y-%m-%d").date() and catalog["pikup_datetime"][i].date()<=datetime.strptime(f2, "%Y-%m-%d").date():
+                if dic not in cant_barrios:
+                    cant_barrios[dic]={
+                    "cantidad":0, 
+                    "distancia":0,
+                    "tiempo":0,
+                    "costo":0,
+                    "promedio":0}
                     
+                cant_barrios[dic]["cantidad"]+=1
+                cant_barrios[dic]["distancia"]+=catalog["trip_distance"][i]
+                cant_barrios[dic]["tiempo"]+=(catalog["dropoff_datetime"][i]-catalog["pickup_datetime"][i])/60
+                cant_barrios[dic]["costo"]+=catalog["total_amount"][i]
+                cant_barrios[dic]["promedio"]=cant_barrios[dic]["costo"]/cant_barrios[dic]["cantidad"]
+               
                 if cantidad==0:
                     mayor=dic
                     menor=dic
@@ -249,19 +241,22 @@ def req_4(catalog,filtro,f1,f2):
                     mayor=dic
                 elif cant_barrios[dic]["promedio"]<cant_barrios[menor]:
                     menor=dic
-    for i in range(0,len(0,archivo["latitude"])):
+                    
+    for i in range(0,len(archivo["latitude"])):
+        
         if filtro=="MAYOR":
-            if mayor["inicio2"]==archivo["latitude"][i] and mayor["inicio"]==archivo["longitude"][i]:
+            if mayor[1]==archivo["latitude"][i] and mayor[0]==archivo["longitude"][i]:
                 res["barrio_inicial"]=archivo["neighborhood"][i]
-            if mayor["final2"]==archivo["latitude"][i] and mayor["final"]==archivo["longitude"][i]:
+            if mayor[3]==archivo["latitude"][i] and mayor[2]==archivo["longitude"][i]:
                 res["barrio_final"]=archivo["neighborhood"][i]
             res={"promedio_distancia":(cant_barrios[mayor]["distancia"]/cant_barrios[mayor]["cantidad"]),"cantidad":cant_barrios[mayor]["cantidad"],"tiempo_promedio":(cant_barrios[mayor]["tiempo"]/cant_barrios[mayor]["cantidad"]),"promedio_costo":cant_barrios[mayor]["promedio"]}
         elif filtro=="MENOR":
-            if menor["inicio2"]==archivo["latitude"][i] and menor["inicio"]==archivo["longitude"][i]:
+            if menor[1]==archivo["latitude"][i] and menor[0]==archivo["longitude"][i]:
                 res["barrio_inicial"]=archivo["neighborhood"][i]
-            if menor["final2"]==archivo["latitude"][i] and menor["final"]==archivo["longitude"][i]:
+            if menor[3]==archivo["latitude"][i] and menor[2]==archivo["longitude"][i]:
                 res["barrio_final"]=archivo["neighborhood"][i]
             res={"promedio_distancia":(cant_barrios[menor]["distancia"]/cant_barrios[menor]["cantidad"]),"cantidad":cant_barrios[menor]["cantidad"],"tiempo_promedio":(cant_barrios[menor]["tiempo"]/cant_barrios[menor]["cantidad"]),"promedio_costo":cant_barrios[menor]["promedio"]}
+   
     final=get_time()
     tiempo=delta_time(inicio,final)
     res["tiempo_funcion"]=tiempo
@@ -274,6 +269,8 @@ def req_5(catalog, filtro, f1, f2):
     """
     Retorna el resultado del requerimiento 5
     """
+    inicio=get_time()
+    catalog=trans_datos(catalog)
     res={}
     franjas={}
     for i in range(0, len(catalog["pickup_datetime"])):
@@ -303,46 +300,79 @@ def req_5(catalog, filtro, f1, f2):
     res["filtro"]=filtro
     res["franja_de_horas"]=[filt,filt+1]
     res["max_o_min_franja"]=resf
-        
+    res["Tiempo_ejecucion"]=delta_time(inicio,get_time())
     
     
     return res  
-        
-        
-
-    
-                
-            
-        
-            
-        
     
 
-def req_6(catalog):
+def req_6(catalog,barrio_inicio, fecha_ini, fecha_fin):
     """
     Retorna el resultado del requerimiento 6
-    """
-    # TODO: Modificar el requerimiento 6
-    pass
+    """    
+    inicio = get_time()
+    catalog = trans_datos(catalog)
+    fecha_ini = datetime.strptime(fecha_ini, "%Y-%m-%d")
+    fecha_fin = datetime.strptime(fecha_fin, "%Y-%m-%d")
+    total_trayectos = 0
+    distancia_total = 0
+    tiempo_total = 0
+    destinos = {}
+    pagos = {}
+    pagos_total = {}
+    tiempo_pago = {}
 
+    for i in range(len(catalog["pickup_datetime"])):
+        fecha_pickup = catalog["pickup_datetime"][i]
+        if fecha_ini <= fecha_pickup.date() <= fecha_fin:
+            if catalog["pickup_barrio"][i] == barrio_inicio:
+                total_trayectos += 1
+                distancia_total += catalog["trip_distance"][i]
+                duracion = catalog["dropoff_datetime"][i] - catalog["pickup_datetime"][i]
+                tiempo_total += duracion.total_seconds() / 60
+                barrio_destino = catalog["dropoff_barrio"][i]
+                destinos[barrio_destino] = destinos.get(barrio_destino, 0) + 1
+                pago = catalog["payment_type"][i]
+                pagos[pago] = pagos.get(pago, 0) + 1
+                pagos_total[pago] = pagos_total.get(pago, 0) + catalog["total_amount"][i]
+                tiempo_pago[pago] = tiempo_pago.get(pago, 0) + duracion.total_seconds() / 60
 
-def req_7(catalog):
-    """
-    Retorna el resultado del requerimiento 7
-    """
-    # TODO: Modificar el requerimiento 7
-    pass
+    if total_trayectos == 0:
+        dicc = {
+            "tiempo_ejecucion": delta_time(inicio, get_time()),
+            "total_trayectos": 0,
+            "distancia_promedio": 0,
+            "tiempo_promedio": 0,
+            "barrio_destino_mas_visitado": "N/A",
+            "medios_pago": []
+        }
+         
+    else:
+        barrio_destino_mas_visitado = max(destinos, key=destinos.get)
+        medio_mas_usado = max(pagos, key=pagos.get)
+        medio_mas_recaudo = max(pagos_total, key=pagos_total.get)
 
+        medios_pago = []
+        for pago in pagos:
+            medios_pago.append({
+                "tipo_pago": pago,
+                "cantidad_trayectos": pagos[pago],
+                "precio_promedio": pagos_total[pago] / pagos[pago],
+                "es_mas_usado": pago == medio_mas_usado,
+                "es_mas_recaudo": pago == medio_mas_recaudo,
+                "tiempo_promedio": tiempo_pago[pago] / pagos[pago]
+            })
 
-def req_8(catalog):
-    """
-    Retorna el resultado del requerimiento 8
-    """
-    # TODO: Modificar el requerimiento 8
-    pass
+        dicc = {
+            "tiempo_ejecucion": delta_time(inicio, get_time()),
+            "total_trayectos": total_trayectos,
+            "distancia_promedio": distancia_total / total_trayectos,
+            "tiempo_promedio": tiempo_total / total_trayectos,
+            "barrio_destino_mas_visitado": barrio_destino_mas_visitado,
+            "medios_pago": medios_pago
+        }
+        return dicc
 
-
-# Funciones para medir tiempos de ejecucion
 
 def get_time():
     """

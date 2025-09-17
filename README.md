@@ -34,7 +34,7 @@ The students edit this section to add their names, Uniandes emails, and specify 
 
 1. Angie Dahana Aponte Ariza, a.apontea@uniandes.edu.co, 202416313.
 1. Mateo Avila Benavides, m.avilab2@uniandes.edu.co, 202410101.
-1. Santiago Sarmiento Pinzon, s.sarmientop234, Student No. 3 owned functionality.
+1. Santiago Sarmiento Pinzon, s.sarmientop234, 202510617.
 
 [Back to top](#retos-template)
 
