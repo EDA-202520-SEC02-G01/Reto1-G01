@@ -21,9 +21,7 @@ def print_menu():
     print("4- Ejecutar Requerimiento 3")
     print("5- Ejecutar Requerimiento 4")
     print("6- Ejecutar Requerimiento 5")
-    print("7- Ejecutar Requerimiento 6")
-    print("8- Ejecutar Requerimiento 7")
-    print("9- Ejecutar Requerimiento 8 (Bono)")
+    
     print("0- Salir")
 
 def load_data(catalog):
@@ -32,15 +30,10 @@ def load_data(catalog):
     """
     #TODO: Realizar la carga de datos
     filename=input("nombre del archivo:")
-    load_data(catalog, filename)
+    return load_data(catalog, filename)
 
 
-def print_data(control, id):
-    """
-        Función que imprime un dato dado su ID
-    """
-    #TODO: Realizar la función para imprimir un elemento
-    print()
+
 
 def print_req_1(catalog):
     """
@@ -100,28 +93,15 @@ def print_req_5(catalog):
     
 
 
-def print_req_6(control):
+def print_req_6(catalog):
     """
         Función que imprime la solución del Requerimiento 6 en consola
     """
     # TODO: Imprimir el resultado del requerimiento 6
-    pass
-
-
-def print_req_7(control):
-    """
-        Función que imprime la solución del Requerimiento 7 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 7
-    pass
-
-
-def print_req_8(control):
-    """
-        Función que imprime la solución del Requerimiento 8 en consola
-    """
-    # TODO: Imprimir el resultado del requerimiento 8
-    pass
+    barrio_inicio=input("ingresa la barrio de inicio")
+    fecha_ini=input("ingresa la fecha inicio en formato YYYY/MM/DD")
+    fecha_fin=input("ingresa la fecha final en formato YYYY/MM/DD")
+    print(logic.req_6(catalog,barrio_inicio, fecha_ini, fecha_fin))
 
 
 # Se crea la lógica asociado a la vista
@@ -139,7 +119,7 @@ def main():
         inputs = input('Seleccione una opción para continuar\n')
         if int(inputs) == 1:
             print("Cargando información de los archivos ....\n")
-            data = load_data(control)
+            control = load_data(control)
         elif int(inputs) == 2:
             print_req_1(control)
 
@@ -157,13 +137,7 @@ def main():
 
         elif int(inputs) == 7:
             print_req_6(control)
-
-        elif int(inputs) == 8:
-            print_req_7(control)
-
-        elif int(inputs) == 9:
-            print_req_8(control)
-
+            
         elif int(inputs) == 0:
             working = False
             print("\nGracias por utilizar el programa") 
